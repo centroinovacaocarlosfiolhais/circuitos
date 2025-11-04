@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuitos de Visita - CICF</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-code: #5DADE2;
+            --color-bot: #F39C12;
+            --color-voice: #EC7063;
+            --color-make: #95A5A6;
+            --color-play: #9B59B6;
+            --color-green: #52BE80;
+            --color-link: #F4D03F;
+            --color-primary: #2C3E50;
+            --color-secondary: #34495E;
+            --color-accent: #E67E22;
+        }
+
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--color-primary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .header-logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .brain-icon {
+            font-size: 1.2em;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            border-bottom: 3px solid #e0e0e0;
+        }
+
+        nav button {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+            color: var(--color-secondary);
+        }
+
+        nav button:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        nav button.active {
+            background: white;
+            border-bottom-color: var(--color-accent);
+            color: var(--color-accent);
+        }
+
+        .page {
+            display: none;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .circuit-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .circuit-icon {
+            font-size: 3em;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .circuit-info h2 {
+            font-size: 2em;
+            color: var(--color-primary);
+            margin-bottom: 5px;
+        }
+
+        .circuit-info .subtitle {
+            font-size: 1.2em;
+            color: var(--color-secondary);
+            font-weight: 500;
+        }
+
+        .circuit-info .duration {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 20px;
+            background: var(--color-accent);
+            color: white;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1em;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid var(--color-accent);
+        }
+
+        .section h3 {
+            font-size: 1.5em;
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 1.2em;
+        }
+
+        .editable {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px dashed #e0e0e0;
+            min-height: 60px;
+            transition: all 0.3s ease;
+        }
+
+        .editable:hover {
+            border-color: var(--color-accent);
+            box-shadow: 0 3px 10px rgba(230, 126, 34, 0.1);
+        }
+
+        .editable:focus {
+            outline: none;
+            border-style: solid;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--color-accent);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--color-accent);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--color-accent);
+        }
+
+        .timeline-time {
+            font-weight: 700;
+            color: var(--color-accent);
+            margin-bottom: 5px;
+            font-size: 0.95em;
+        }
+
+        .timeline-content {
+            color: var(--color-secondary);
+        }
+
+        .universes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .universe {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .universe:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .universe.code { background: var(--color-code); }
+        .universe.bot { background: var(--color-bot); }
+        .universe.voice { background: var(--color-voice); }
+        .universe.make { background: var(--color-make); }
+        .universe.play { background: var(--color-play); }
+        .universe.green { background: var(--color-green); }
+        .universe.link { background: var(--color-link); color: var(--color-primary); }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .info-card-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .info-card-label {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .info-card-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .dropdown-container {
+            margin: 20px 0;
+        }
+
+        .dropdown-label {
+            display: block;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 10px;
+        }
+
+        select.theme-selector {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            border: 3px solid var(--color-accent);
+            border-radius: 10px;
+            background: white;
+            color: var(--color-primary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23E67E22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 20px;
+            padding-right: 50px;
+        }
+
+        select.theme-selector:hover {
+            border-color: #d35400;
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2);
+        }
+
+        select.theme-selector:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
+        }
+
+        .theme-description {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid var(--color-accent);
+            display: none;
+        }
+
+        .theme-description.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .theme-description h4 {
+            color: var(--color-accent);
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .theme-description p {
+            color: var(--color-secondary);
+            line-height: 1.8;
+        }
+
+        .theme-description ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .theme-description li {
+            margin-bottom: 8px;
+            color: var(--color-secondary);
+        }
+
+        .competencies {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .competency {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .competency-icon {
+            font-size: 1.5em;
+            min-width: 30px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button.action-btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        button.print-btn {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        button.print-btn:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+        }
+
+        button.reset-btn {
+            background: #95a5a6;
+            color: white;
+        }
+
+        button.reset-btn:hover {
+            background: #7f8c8d;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: var(--color-primary);
+            color: white;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        footer .contact {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            nav, .actions, footer {
+                display: none !important;
+            }
+
+            .page {
+                display: none !important;
+                page-break-after: always;
+            }
+
+            .page.active {
+                display: block !important;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .editable {
+                border-style: solid;
+                border-color: #ccc;
+            }
+
+            .theme-selector {
+                border-color: #ccc;
+                background-image: none;
+            }
+
+            .theme-description {
+                display: none !important;
+            }
+
+            .theme-description.active {
+                display: block !important;
+                border-color: #ccc;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            header {
+                padding: 20px;
+            }
+
+            .header-logo {
+                font-size: 1.8em;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            nav button {
+                padding: 15px 10px;
+                font-size: 0.9em;
+            }
+
+            .page {
+                padding: 20px;
+            }
+
+            .circuit-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            button.action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-logo">
+                <span class="brain-icon">🧠</span>
+                <span>Centro de Inovação Carlos Fiolhais</span>
+            </div>
+            <h1>Circuitos de Visita para Escolas</h1>
+            <p>Laboratório de Inovação Social com Tecnologia | Maia</p>
+        </header>
+
+        <nav>
+            <button onclick="showPage(1)" class="nav-btn active" id="nav1">
+                ⚡ Circuito 1H
+            </button>
+            <button onclick="showPage(2)" class="nav-btn" id="nav2">
+                🚀 Circuito 2-3H
+            </button>
+            <button onclick="showPage(3)" class="nav-btn" id="nav3">
+                🌟 Circuito Full Day
+            </button>
+            <button onclick="showPage(4)" class="nav-btn" id="nav4">
+                💻 Webinar 1H
+            </button>
+            <button onclick="showPage(5)" class="nav-btn" id="nav5">
+                🏫 Visita à Escola
+            </button>
+        </nav>
+
+        <!-- CIRCUITO 1H -->
+        <div id="page1" class="page active">
+            <div class="circuit-header">
+                <div class="circuit-icon">⚡</div>
+                <div class="circuit-info">
+                    <h2>Circuito Descobrir</h2>
+                    <p class="subtitle">Tour Guiado + Atividade Prática</p>
+                    <span class="duration">⏱️ Duração: 1 hora</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎯</span> Objetivos</h3>
+                <div class="editable" contenteditable="true">
+• Proporcionar o primeiro contacto com o CICF e os seus espaços
+• Despertar a curiosidade para as áreas STEAM
+• Experimentar uma atividade prática hands-on
+• Inspirar para o uso positivo da tecnologia
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📋</span> Estrutura do Circuito</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:00 - 00:15 (15 min)</div>
+                        <div class="timeline-content">
+                            <strong>Boas-vindas e Apresentação</strong><br>
+                            • Receção dos alunos e professores<br>
+                            • Apresentação dos 7 Universos do CICF<br>
+                            • Explicação do conceito "Digger"
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:15 - 00:40 (25 min)</div>
+                        <div class="timeline-content">
+                            <strong>Tour pelos Espaços</strong><br>
+                            • Visita guiada pelos laboratórios<br>
+                            • Demonstração de equipamentos (impressoras 3D, robôs, etc.)<br>
+                            • Conhecer os mentores e projetos em curso
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:40 - 01:00 (20 min)</div>
+                        <div class="timeline-content">
+                            <strong>Atividade Prática</strong><br>
+                            <em>Escolher uma opção:</em><br>
+                            • <strong>BOT Express:</strong> Desafio rápido de robótica básica<br>
+                            • <strong>CODE Quick:</strong> Programação com blocos visuais
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎨</span> Universos Envolvidos</h3>
+                <div class="universes">
+                    <div class="universe bot">🤖 BOT</div>
+                    <div class="universe code">💻 CODE</div>
+                    <div class="universe link">❤️ LINK</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">✨</span> Competências Desenvolvidas</h3>
+                <div class="competencies">
+                    <div class="competency">
+                        <span class="competency-icon">🧭</span>
+                        <span>Curiosidade científica</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🤝</span>
+                        <span>Trabalho colaborativo</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">💡</span>
+                        <span>Pensamento lógico</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🔧</span>
+                        <span>Literacia tecnológica</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">ℹ️</span> Informações Práticas</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">👥</div>
+                        <div class="info-card-label">Público-Alvo</div>
+                        <div class="info-card-value editable" contenteditable="true">12-18 anos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📊</div>
+                        <div class="info-card-label">Capacidade</div>
+                        <div class="info-card-value editable" contenteditable="true">Máx. 25 alunos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📍</div>
+                        <div class="info-card-label">Local</div>
+                        <div class="info-card-value editable" contenteditable="true">R. Simão Bolívar, Maia</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-value editable" contenteditable="true">A definir</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📝</span> Notas e Observações</h3>
+                <div class="editable" contenteditable="true" style="min-height: 120px;">
+[Espaço para notas personalizadas, requisitos especiais da turma, adaptações necessárias, etc.]
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn print-btn" onclick="window.print()">
+                    🖨️ Imprimir Ficha
+                </button>
+                <button class="action-btn reset-btn" onclick="resetPage(1)">
+                    🔄 Restaurar Original
+                </button>
+            </div>
+        </div>
+
+        <!-- CIRCUITO 2-3H -->
+        <div id="page2" class="page">
+            <div class="circuit-header">
+                <div class="circuit-icon">🚀</div>
+                <div class="circuit-info">
+                    <h2>Circuito Explorar</h2>
+                    <p class="subtitle">Tour Guiado + 2 Atividades Hands-On</p>
+                    <span class="duration">⏱️ Duração: 2-3 horas</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎯</span> Objetivos</h3>
+                <div class="editable" contenteditable="true">
+• Explorar em profundidade múltiplos universos tecnológicos
+• Desenvolver competências práticas em 2 áreas diferentes
+• Promover a colaboração e criatividade
+• Experimentar o ciclo completo de design e prototipagem
+• Conectar tecnologia com desafios reais
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📋</span> Estrutura do Circuito</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:00 - 00:15 (15 min)</div>
+                        <div class="timeline-content">
+                            <strong>Boas-vindas e Apresentação Interativa</strong><br>
+                            • Dinâmica de grupo para quebrar o gelo<br>
+                            • Apresentação do conceito CICF e dos 7 Universos<br>
+                            • Formação das equipas de trabalho
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:15 - 00:45 (30 min)</div>
+                        <div class="timeline-content">
+                            <strong>Tour pelos 7 Universos</strong><br>
+                            • Visita guiada com demonstrações práticas<br>
+                            • Interação com projetos em curso<br>
+                            • Explicação das tecnologias disponíveis
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:45 - 01:45 (60 min)</div>
+                        <div class="timeline-content">
+                            <strong>Atividade 1 - Escolher uma opção:</strong><br>
+                            • <strong>BOT Challenge:</strong> Construir e programar robô para desafio específico<br>
+                            • <strong>MAKE Lab:</strong> Modelação 3D + impressão de protótipo<br>
+                            • <strong>CODE Studio:</strong> Desenvolver aplicação simples com IA
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">01:45 - 02:45 (60 min)</div>
+                        <div class="timeline-content">
+                            <strong>Atividade 2 - Escolher uma opção:</strong><br>
+                            • <strong>PLAY Zone:</strong> Torneio gaming educativo (FIFA/CS2)<br>
+                            • <strong>VOICE Studio:</strong> Criar conteúdo para rádio/podcast<br>
+                            • <strong>GREEN Quest:</strong> Desafio sustentabilidade com tecnologia
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">02:45 - 03:00 (15 min)</div>
+                        <div class="timeline-content">
+                            <strong>Fecho e Reflexão</strong><br>
+                            • Partilha de experiências<br>
+                            • Entrega de certificado de participação<br>
+                            • Informações sobre como continuar no CICF
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎨</span> Universos Envolvidos</h3>
+                <div class="universes">
+                    <div class="universe code">💻 CODE</div>
+                    <div class="universe bot">🤖 BOT</div>
+                    <div class="universe voice">🎙️ VOICE</div>
+                    <div class="universe make">🔧 MAKE</div>
+                    <div class="universe play">🎮 PLAY</div>
+                    <div class="universe green">🌱 GREEN</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">✨</span> Competências Desenvolvidas</h3>
+                <div class="competencies">
+                    <div class="competency">
+                        <span class="competency-icon">🧠</span>
+                        <span>Pensamento computacional</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🎨</span>
+                        <span>Criatividade e inovação</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🤝</span>
+                        <span>Colaboração em equipa</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🔍</span>
+                        <span>Resolução de problemas</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">💬</span>
+                        <span>Comunicação eficaz</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🎯</span>
+                        <span>Gestão de projetos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">ℹ️</span> Informações Práticas</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">👥</div>
+                        <div class="info-card-label">Público-Alvo</div>
+                        <div class="info-card-value editable" contenteditable="true">12-18 anos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📊</div>
+                        <div class="info-card-label">Capacidade</div>
+                        <div class="info-card-value editable" contenteditable="true">Máx. 25 alunos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📍</div>
+                        <div class="info-card-label">Local</div>
+                        <div class="info-card-value editable" contenteditable="true">R. Simão Bolívar, Maia</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-value editable" contenteditable="true">A definir</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎒</span> Material Necessário</h3>
+                <div class="editable" contenteditable="true">
+• Os alunos devem trazer:
+  - Roupa confortável
+  - Garrafa de água
+  - Curiosidade e vontade de experimentar!
+
+• Fornecido pelo CICF:
+  - Todos os equipamentos e materiais
+  - Seguro de acidentes pessoais
+  - Acompanhamento por mentores especializados
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📝</span> Notas e Observações</h3>
+                <div class="editable" contenteditable="true" style="min-height: 120px;">
+[Espaço para notas personalizadas, requisitos especiais da turma, adaptações necessárias, etc.]
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn print-btn" onclick="window.print()">
+                    🖨️ Imprimir Ficha
+                </button>
+                <button class="action-btn reset-btn" onclick="resetPage(2)">
+                    🔄 Restaurar Original
+                </button>
+            </div>
+        </div>
+
+        <!-- CIRCUITO FULL DAY -->
+        <div id="page3" class="page">
+            <div class="circuit-header">
+                <div class="circuit-icon">🌟</div>
+                <div class="circuit-info">
+                    <h2>Circuito Criar</h2>
+                    <p class="subtitle">Experiência Imersiva com Projeto Colaborativo</p>
+                    <span class="duration">⏱️ Duração: Dia Completo (6h)</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎯</span> Objetivos</h3>
+                <div class="editable" contenteditable="true">
+• Vivenciar o ciclo completo de desenvolvimento de um projeto tecnológico
+• Aplicar metodologias de design thinking e prototipagem
+• Desenvolver competências técnicas avançadas em múltiplas áreas
+• Criar soluções para desafios reais da comunidade
+• Apresentar e comunicar ideias de forma eficaz
+• Promover espírito empreendedor e inovação social
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📋</span> Estrutura do Circuito</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">09:30 - 10:00 (30 min)</div>
+                        <div class="timeline-content">
+                            <strong>Boas-vindas e Ice Breaker Digital</strong><br>
+                            • Receção e registo dos participantes<br>
+                            • Dinâmica de apresentação criativa<br>
+                            • Formação de equipas multidisciplinares<br>
+                            • Introdução ao desafio do dia
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">10:00 - 10:45 (45 min)</div>
+                        <div class="timeline-content">
+                            <strong>Tour Interativo pelos 7 Universos</strong><br>
+                            • Visita guiada com demonstrações ao vivo<br>
+                            • Interação com tecnologias e equipamentos<br>
+                            • Conhecer projetos inspiradores<br>
+                            • Q&A com mentores especializados
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">10:45 - 12:30 (105 min)</div>
+                        <div class="timeline-content">
+                            <strong>Atividade Manhã - Escolher uma opção:</strong><br>
+                            • <strong>3D for a Cause:</strong> Design thinking + Modelação 3D para problema social real<br>
+                            • <strong>Code & Create:</strong> Desenvolver jogo educativo em equipa usando IA<br>
+                            • <strong>Bot Wars:</strong> Construir e programar robô para competição colaborativa
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">12:30 - 13:30 (60 min)</div>
+                        <div class="timeline-content">
+                            <strong>Pausa para Almoço</strong><br>
+                            • Lanche partilhado (trazer ou fornecido)<br>
+                            • Momento de convívio e networking<br>
+                            • Jogos livres e descontração
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">13:30 - 15:00 (90 min)</div>
+                        <div class="timeline-content">
+                            <strong>Atividade Tarde - Escolher uma opção:</strong><br>
+                            • <strong>VOICE Lab:</strong> Criar reportagem/podcast sobre a experiência<br>
+                            • <strong>MAKE Studio:</strong> Finalizar e testar protótipos criados<br>
+                            • <strong>GREEN Hackathon:</strong> Pitch de ideias sustentáveis com tecnologia
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">15:00 - 15:30 (30 min)</div>
+                        <div class="timeline-content">
+                            <strong>Apresentações e Celebração</strong><br>
+                            • Pitch dos projetos desenvolvidos (3 min/equipa)<br>
+                            • Feedback da comunidade<br>
+                            • Cerimónia de entrega do "Digger Pass"<br>
+                            • Foto de grupo e encerramento
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎨</span> Universos Envolvidos</h3>
+                <div class="universes">
+                    <div class="universe code">💻 CODE</div>
+                    <div class="universe bot">🤖 BOT</div>
+                    <div class="universe voice">🎙️ VOICE</div>
+                    <div class="universe make">🔧 MAKE</div>
+                    <div class="universe play">🎮 PLAY</div>
+                    <div class="universe green">🌱 GREEN</div>
+                    <div class="universe link">❤️ LINK</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">✨</span> Competências Desenvolvidas</h3>
+                <div class="competencies">
+                    <div class="competency">
+                        <span class="competency-icon">🎯</span>
+                        <span>Design Thinking</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🧠</span>
+                        <span>Pensamento crítico</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🤝</span>
+                        <span>Liderança e colaboração</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">💡</span>
+                        <span>Inovação e criatividade</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🎤</span>
+                        <span>Apresentação pública</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🔧</span>
+                        <span>Prototipagem rápida</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🌍</span>
+                        <span>Consciência social</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">⚡</span>
+                        <span>Gestão de tempo</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">ℹ️</span> Informações Práticas</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">👥</div>
+                        <div class="info-card-label">Público-Alvo</div>
+                        <div class="info-card-value editable" contenteditable="true">12-18 anos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📊</div>
+                        <div class="info-card-label">Capacidade</div>
+                        <div class="info-card-value editable" contenteditable="true">Máx. 25 alunos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📍</div>
+                        <div class="info-card-label">Local</div>
+                        <div class="info-card-value editable" contenteditable="true">R. Simão Bolívar, Maia</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-value editable" contenteditable="true">A definir</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎒</span> Material Necessário</h3>
+                <div class="editable" contenteditable="true">
+• Os alunos devem trazer:
+  - Roupa confortável para trabalhar
+  - Lanche/Almoço (ou coordenar fornecimento)
+  - Garrafa de água reutilizável
+  - Caderno e caneta para anotações
+  - Dispositivo móvel (opcional, para fotos/vídeos)
+  - Muita energia e criatividade! 🚀
+
+• Fornecido pelo CICF:
+  - Todos os equipamentos tecnológicos
+  - Materiais de prototipagem
+  - Mentoria especializada
+  - Seguro de acidentes pessoais
+  - Certificado de participação "Digger Pass"
+  - Registo fotográfico/vídeo da experiência
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🏆</span> Resultados Esperados</h3>
+                <div class="editable" contenteditable="true">
+• Cada equipa desenvolve um protótipo funcional
+• Apresentação final do projeto (pitch de 3 minutos)
+• Portfolio digital com fotos e vídeos da experiência
+• Certificado "Digger Pass" com competências desbloqueadas
+• Possibilidade de continuar o projeto nos clubes regulares
+• Conexão com a comunidade CICF e networking
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📝</span> Notas e Observações</h3>
+                <div class="editable" contenteditable="true" style="min-height: 120px;">
+[Espaço para notas personalizadas, requisitos especiais da turma, adaptações necessárias, coordenação de almoço, etc.]
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn print-btn" onclick="window.print()">
+                    🖨️ Imprimir Ficha
+                </button>
+                <button class="action-btn reset-btn" onclick="resetPage(3)">
+                    🔄 Restaurar Original
+                </button>
+            </div>
+        </div>
+
+        <!-- WEBINAR 1H -->
+        <div id="page4" class="page">
+            <div class="circuit-header">
+                <div class="circuit-icon">💻</div>
+                <div class="circuit-info">
+                    <h2>Webinar Online</h2>
+                    <p class="subtitle">Formação à Distância para Professores e Alunos</p>
+                    <span class="duration">⏱️ Duração: 1 hora</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎯</span> Objetivos</h3>
+                <div class="editable" contenteditable="true">
+• Proporcionar formação acessível e flexível online
+• Introduzir temáticas relevantes das áreas STEAM
+• Partilhar boas práticas e metodologias inovadoras
+• Inspirar professores e alunos para novas abordagens pedagógicas
+• Criar comunidade de aprendizagem à distância
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎨</span> Escolha a Temática do Webinar</h3>
+                <div class="dropdown-container">
+                    <label class="dropdown-label" for="webinar-theme">Selecione o tema:</label>
+                    <select id="webinar-theme" class="theme-selector" onchange="updateWebinarTheme()">
+                        <option value="">-- Selecionar Temática --</option>
+                        <option value="ia-educacao">Inteligência Artificial na Educação</option>
+                        <option value="programacao-iniciantes">Programação para Iniciantes - Scratch e Blocos</option>
+                        <option value="robotica-sala-aula">Robótica na Sala de Aula</option>
+                        <option value="impressao-3d">Modelação e Impressão 3D - Aplicações Educativas</option>
+                        <option value="gaming-educativo">Gaming Educativo e Competências do Séc. XXI</option>
+                        <option value="sustentabilidade-tech">Sustentabilidade e Tecnologia Verde</option>
+                        <option value="media-digital">Literacia Media e Criação de Conteúdo Digital</option>
+                        <option value="pensamento-computacional">Pensamento Computacional sem Computador</option>
+                        <option value="seguranca-digital">Segurança Digital e Cidadania Online</option>
+                        <option value="design-thinking">Design Thinking aplicado à Educação</option>
+                    </select>
+                </div>
+
+                <div id="theme-ia-educacao" class="theme-description">
+                    <h4>🤖 Inteligência Artificial na Educação</h4>
+                    <p><strong>Descrição:</strong> Descubra como integrar ferramentas de IA nas suas aulas de forma ética e pedagógica. Explore aplicações práticas, desafios e oportunidades.</p>
+                    <ul>
+                        <li>Introdução aos conceitos fundamentais de IA</li>
+                        <li>Ferramentas de IA para professores (ChatGPT, Copilot, etc.)</li>
+                        <li>Criar atividades com suporte de IA</li>
+                        <li>Ética e literacia em IA</li>
+                    </ul>
+                    <p><strong>Universo:</strong> CODE 💻</p>
+                </div>
+
+                <div id="theme-programacao-iniciantes" class="theme-description">
+                    <h4>🎮 Programação para Iniciantes - Scratch e Blocos</h4>
+                    <p><strong>Descrição:</strong> Aprenda a ensinar programação de forma lúdica e acessível usando Scratch e outras ferramentas de programação visual.</p>
+                    <ul>
+                        <li>Introdução ao pensamento computacional</li>
+                        <li>Scratch - primeiros passos e projetos práticos</li>
+                        <li>Integração curricular da programação</li>
+                        <li>Recursos e comunidades de apoio</li>
+                    </ul>
+                    <p><strong>Universo:</strong> CODE 💻</p>
+                </div>
+
+                <div id="theme-robotica-sala-aula" class="theme-description">
+                    <h4>🤖 Robótica na Sala de Aula</h4>
+                    <p><strong>Descrição:</strong> Como implementar projetos de robótica educativa. Conheça kits acessíveis e metodologias hands-on.</p>
+                    <ul>
+                        <li>Kits de robótica educativa (Arduino, micro:bit, LEGO)</li>
+                        <li>Atividades práticas por ano de escolaridade</li>
+                        <li>Gestão de projetos colaborativos</li>
+                        <li>Competências STEAM desenvolvidas</li>
+                    </ul>
+                    <p><strong>Universo:</strong> BOT 🤖</p>
+                </div>
+
+                <div id="theme-impressao-3d" class="theme-description">
+                    <h4>🔧 Modelação e Impressão 3D - Aplicações Educativas</h4>
+                    <p><strong>Descrição:</strong> Explore o potencial da impressão 3D na educação. De conceitos básicos a projetos interdisciplinares.</p>
+                    <ul>
+                        <li>Introdução à modelação 3D (TinkerCAD, Fusion 360)</li>
+                        <li>Preparação de ficheiros para impressão</li>
+                        <li>Projetos educativos inspiradores</li>
+                        <li>3D for a Cause - impacto social</li>
+                    </ul>
+                    <p><strong>Universo:</strong> MAKE 🔧</p>
+                </div>
+
+                <div id="theme-gaming-educativo" class="theme-description">
+                    <h4>🎮 Gaming Educativo e Competências do Séc. XXI</h4>
+                    <p><strong>Descrição:</strong> Videojogos como ferramenta pedagógica. Promover uso equilibrado e desenvolvimento de competências através do gaming.</p>
+                    <ul>
+                        <li>Potencial educativo dos videojogos</li>
+                        <li>Projeto InGaming - prevenção de adições</li>
+                        <li>Criar competições educativas</li>
+                        <li>Gamificação na sala de aula</li>
+                    </ul>
+                    <p><strong>Universo:</strong> PLAY 🎮</p>
+                </div>
+
+                <div id="theme-sustentabilidade-tech" class="theme-description">
+                    <h4>🌱 Sustentabilidade e Tecnologia Verde</h4>
+                    <p><strong>Descrição:</strong> Consciencialização ambiental através da tecnologia. Projetos práticos para um futuro mais sustentável.</p>
+                    <ul>
+                        <li>ODS e tecnologia educativa</li>
+                        <li>Projetos de monitorização ambiental</li>
+                        <li>Green coding e eficiência digital</li>
+                        <li>Ativismo digital responsável</li>
+                    </ul>
+                    <p><strong>Universo:</strong> GREEN 🌱</p>
+                </div>
+
+                <div id="theme-media-digital" class="theme-description">
+                    <h4>🎙️ Literacia Media e Criação de Conteúdo Digital</h4>
+                    <p><strong>Descrição:</strong> Capacitar alunos para criar conteúdo responsável. Rádio escolar, podcast e jornalismo digital.</p>
+                    <ul>
+                        <li>Criar uma rádio escolar do zero</li>
+                        <li>Produção de podcasts educativos</li>
+                        <li>Jornal escolar digital</li>
+                        <li>Fact-checking e pensamento crítico</li>
+                    </ul>
+                    <p><strong>Universo:</strong> VOICE 🎙️</p>
+                </div>
+
+                <div id="theme-pensamento-computacional" class="theme-description">
+                    <h4>🧩 Pensamento Computacional sem Computador</h4>
+                    <p><strong>Descrição:</strong> Desenvolver competências computacionais através de atividades unplugged. Acessível a todas as idades.</p>
+                    <ul>
+                        <li>Conceitos fundamentais (algoritmos, decomposição, padrões)</li>
+                        <li>Atividades práticas sem tecnologia</li>
+                        <li>Integração em diferentes disciplinas</li>
+                        <li>Avaliação de competências</li>
+                    </ul>
+                    <p><strong>Universo:</strong> CODE 💻 + LINK ❤️</p>
+                </div>
+
+                <div id="theme-seguranca-digital" class="theme-description">
+                    <h4>🔒 Segurança Digital e Cidadania Online</h4>
+                    <p><strong>Descrição:</strong> Promover comportamentos seguros e responsáveis online. Privacidade, cyberbullying e pegada digital.</p>
+                    <ul>
+                        <li>Proteção de dados pessoais</li>
+                        <li>Prevenção de cyberbullying</li>
+                        <li>Gestão da identidade digital</li>
+                        <li>Ética hacking e segurança</li>
+                    </ul>
+                    <p><strong>Universo:</strong> CODE 💻 + LINK ❤️</p>
+                </div>
+
+                <div id="theme-design-thinking" class="theme-description">
+                    <h4>💡 Design Thinking aplicado à Educação</h4>
+                    <p><strong>Descrição:</strong> Metodologia centrada no utilizador para resolver problemas reais. Criatividade e inovação pedagógica.</p>
+                    <ul>
+                        <li>5 fases do Design Thinking</li>
+                        <li>Ferramentas e dinâmicas práticas</li>
+                        <li>Aplicação a desafios escolares</li>
+                        <li>Casos de sucesso em educação</li>
+                    </ul>
+                    <p><strong>Universo:</strong> LINK ❤️</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📋</span> Estrutura do Webinar</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:00 - 00:05 (5 min)</div>
+                        <div class="timeline-content">
+                            <strong>Boas-vindas e Apresentação</strong><br>
+                            • Apresentação do CICF e facilitadores<br>
+                            • Objetivos da sessão<br>
+                            • Orientações técnicas (chat, Q&A)
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:05 - 00:35 (30 min)</div>
+                        <div class="timeline-content">
+                            <strong>Conteúdo Principal</strong><br>
+                            • Apresentação teórica com exemplos práticos<br>
+                            • Demonstrações ao vivo<br>
+                            • Recursos e ferramentas partilhadas<br>
+                            • Casos de estudo e boas práticas
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:35 - 00:50 (15 min)</div>
+                        <div class="timeline-content">
+                            <strong>Sessão Prática / Hands-On</strong><br>
+                            • Atividade prática guiada<br>
+                            • Trabalho individual ou em breakout rooms<br>
+                            • Suporte técnico em tempo real
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">00:50 - 01:00 (10 min)</div>
+                        <div class="timeline-content">
+                            <strong>Q&A e Recursos</strong><br>
+                            • Perguntas e respostas<br>
+                            • Partilha de materiais de apoio<br>
+                            • Informação sobre próximos passos<br>
+                            • Certificado de participação
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">✨</span> Competências Desenvolvidas</h3>
+                <div class="competencies">
+                    <div class="competency">
+                        <span class="competency-icon">📚</span>
+                        <span>Literacia digital</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🎯</span>
+                        <span>Metodologias ativas</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">💡</span>
+                        <span>Inovação pedagógica</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🔧</span>
+                        <span>Ferramentas digitais</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">ℹ️</span> Informações Práticas</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">👥</div>
+                        <div class="info-card-label">Público-Alvo</div>
+                        <div class="info-card-value editable" contenteditable="true">Professores e Alunos</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📊</div>
+                        <div class="info-card-label">Capacidade</div>
+                        <div class="info-card-value editable" contenteditable="true">Até 100 participantes</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">💻</div>
+                        <div class="info-card-label">Plataforma</div>
+                        <div class="info-card-value editable" contenteditable="true">Zoom / Teams</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-value editable" contenteditable="true">Gratuito</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎒</span> Requisitos Técnicos</h3>
+                <div class="editable" contenteditable="true">
+• Computador/tablet com acesso à internet
+• Navegador atualizado (Chrome, Firefox, Edge)
+• Câmara e microfone (recomendado)
+• Plataforma Zoom ou Microsoft Teams instalada
+• Auriculares para melhor experiência de áudio
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📝</span> Notas e Observações</h3>
+                <div class="editable" contenteditable="true" style="min-height: 120px;">
+[Data pretendida, número estimado de participantes, necessidades específicas, etc.]
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn print-btn" onclick="window.print()">
+                    🖨️ Imprimir Ficha
+                </button>
+                <button class="action-btn reset-btn" onclick="resetPage(4)">
+                    🔄 Restaurar Original
+                </button>
+            </div>
+        </div>
+
+        <!-- VISITA À ESCOLA -->
+        <div id="page5" class="page">
+            <div class="circuit-header">
+                <div class="circuit-icon">🏫</div>
+                <div class="circuit-info">
+                    <h2>Visita à Escola</h2>
+                    <p class="subtitle">O CICF vai até à vossa escola!</p>
+                    <span class="duration">⏱️ Duração: Variável (1-2h)</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎯</span> Objetivos</h3>
+                <div class="editable" contenteditable="true">
+• Levar a experiência CICF diretamente às escolas
+• Apresentar a oferta formativa e oportunidades
+• Realizar atividades práticas in loco
+• Inspirar alunos e comunidade educativa
+• Facilitar o acesso a quem não pode deslocar-se ao Centro
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎨</span> Escolha o Tipo de Visita</h3>
+                <div class="dropdown-container">
+                    <label class="dropdown-label" for="visit-theme">Selecione o formato:</label>
+                    <select id="visit-theme" class="theme-selector" onchange="updateVisitTheme()">
+                        <option value="">-- Selecionar Tipo de Visita --</option>
+                        <option value="oferta-formativa">Apresentação da Oferta Formativa do Centro</option>
+                        <option value="ingaming">InGaming vai às Escolas</option>
+                        <option value="radio-escolar">CICF - Rádio Escolar</option>
+                        <option value="robotica-demonstracao">Demonstração de Robótica</option>
+                        <option value="impressao-3d-demo">Workshop Impressão 3D</option>
+                        <option value="programacao-rapida">Sessão de Programação Express</option>
+                        <option value="sustentabilidade">Tech para Sustentabilidade</option>
+                        <option value="apps-for-good">Apresentação Apps for Good</option>
+                    </select>
+                </div>
+
+                <div id="visit-oferta-formativa" class="theme-description">
+                    <h4>🎓 Apresentação da Oferta Formativa do Centro</h4>
+                    <p><strong>Descrição:</strong> Sessão informativa sobre todos os programas, clubes e atividades disponíveis no CICF. Ideal para começar a parceria com a escola.</p>
+                    <ul>
+                        <li>Apresentação dos 7 Universos (CODE, BOT, VOICE, MAKE, PLAY, GREEN, LINK)</li>
+                        <li>Clubes regulares e horários</li>
+                        <li>Programas educativos (Apps for Good, InGaming)</li>
+                        <li>Como inscrever alunos e participar</li>
+                        <li>Oportunidades para professores (formações, parcerias)</li>
+                        <li>Q&A com a equipa CICF</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 60-90 minutos | <strong>Público:</strong> Alunos, Professores, Encarregados de Educação</p>
+                </div>
+
+                <div id="visit-ingaming" class="theme-description">
+                    <h4>🎮 InGaming vai às Escolas</h4>
+                    <p><strong>Descrição:</strong> Sessão de sensibilização sobre uso equilibrado de videojogos e prevenção de adições. Parte do projeto InGaming.</p>
+                    <ul>
+                        <li>O que é o InGaming? Projeto de prevenção e promoção de jogo saudável</li>
+                        <li>Sinais de alerta: quando o gaming se torna problema</li>
+                        <li>Benefícios educativos dos videojogos</li>
+                        <li>Gestão equilibrada do tempo de ecrã</li>
+                        <li>Atividade prática: torneio educativo FIFA/CS2</li>
+                        <li>Recursos para pais e professores</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 90-120 minutos | <strong>Público:</strong> Alunos 12-18 anos | <strong>Universo:</strong> PLAY 🎮</p>
+                </div>
+
+                <div id="visit-radio-escolar" class="theme-description">
+                    <h4>🎙️ CICF - Rádio Escolar</h4>
+                    <p><strong>Descrição:</strong> Workshop prático para criar ou dinamizar uma rádio escolar. Da conceção à emissão ao vivo!</p>
+                    <ul>
+                        <li>Como montar uma rádio escolar (equipamento e logística)</li>
+                        <li>Técnicas de locução e apresentação</li>
+                        <li>Criação de conteúdos: reportagens, entrevistas, podcasts</li>
+                        <li>Atividade prática: gravar um programa piloto</li>
+                        <li>Edição básica de áudio</li>
+                        <li>Distribuição e streaming online</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 120 minutos | <strong>Público:</strong> Alunos 12-18 anos | <strong>Universo:</strong> VOICE 🎙️</p>
+                </div>
+
+                <div id="visit-robotica-demonstracao" class="theme-description">
+                    <h4>🤖 Demonstração de Robótica</h4>
+                    <p><strong>Descrição:</strong> Sessão hands-on com robôs educativos. Construir, programar e desafiar!</p>
+                    <ul>
+                        <li>Demonstração de diferentes kits de robótica</li>
+                        <li>Atividade prática: programar um robô simples</li>
+                        <li>Desafios em equipa (seguir linhas, labirintos, etc.)</li>
+                        <li>Introdução ao Arduino e micro:bit</li>
+                        <li>Como integrar robótica no currículo escolar</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 90-120 minutos | <strong>Público:</strong> Alunos 10-18 anos | <strong>Universo:</strong> BOT 🤖</p>
+                </div>
+
+                <div id="visit-impressao-3d-demo" class="theme-description">
+                    <h4>🔧 Workshop Impressão 3D</h4>
+                    <p><strong>Descrição:</strong> Introdução à modelação e impressão 3D. Ver ideias a ganhar forma!</p>
+                    <ul>
+                        <li>Como funciona uma impressora 3D</li>
+                        <li>Demonstração ao vivo de impressão</li>
+                        <li>Modelação 3D simples no TinkerCAD</li>
+                        <li>Projeto 3D for a Cause - criar com impacto social</li>
+                        <li>Aplicações práticas na educação</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 90 minutos | <strong>Público:</strong> Alunos 12-18 anos | <strong>Universo:</strong> MAKE 🔧</p>
+                </div>
+
+                <div id="visit-programacao-rapida" class="theme-description">
+                    <h4>💻 Sessão de Programação Express</h4>
+                    <p><strong>Descrição:</strong> Introdução rápida à programação. Todos podem programar!</p>
+                    <ul>
+                        <li>O que é programação e porque é importante</li>
+                        <li>Atividade com Scratch ou Blockly</li>
+                        <li>Criar um jogo ou animação simples</li>
+                        <li>Desafios de lógica e pensamento computacional</li>
+                        <li>Recursos para continuar a aprender</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 90 minutos | <strong>Público:</strong> Alunos 10-16 anos | <strong>Universo:</strong> CODE 💻</p>
+                </div>
+
+                <div id="visit-sustentabilidade" class="theme-description">
+                    <h4>🌱 Tech para Sustentabilidade</h4>
+                    <p><strong>Descrição:</strong> Como usar tecnologia para criar um futuro mais sustentável.</p>
+                    <ul>
+                        <li>ODS e desafios globais</li>
+                        <li>Tecnologias verdes e inovação sustentável</li>
+                        <li>Projeto prático: sensor de qualidade do ar/água</li>
+                        <li>Green coding e eficiência energética</li>
+                        <li>Ativismo digital responsável</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 90-120 minutos | <strong>Público:</strong> Alunos 12-18 anos | <strong>Universo:</strong> GREEN 🌱</p>
+                </div>
+
+                <div id="visit-apps-for-good" class="theme-description">
+                    <h4>📱 Apresentação Apps for Good</h4>
+                    <p><strong>Descrição:</strong> Programa educativo onde alunos desenvolvem apps para resolver problemas reais.</p>
+                    <ul>
+                        <li>O que é o Apps for Good</li>
+                        <li>Como funciona o programa (metodologia e fases)</li>
+                        <li>Casos de sucesso e projetos inspiradores</li>
+                        <li>Como a escola pode participar</li>
+                        <li>Suporte e formação para professores</li>
+                        <li>Calendário de competições e eventos</li>
+                    </ul>
+                    <p><strong>Duração:</strong> 60-90 minutos | <strong>Público:</strong> Professores e Alunos 5º-12º ano | <strong>Universo:</strong> LINK ❤️</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📋</span> Como Funciona</h3>
+                <div class="editable" contenteditable="true">
+<strong>Antes da Visita:</strong>
+• Contacto prévio para agendar data e horário
+• Definição da temática e público-alvo
+• Confirmação de requisitos técnicos (projetor, som, internet)
+• Envio de materiais prévios se necessário
+
+<strong>Durante a Visita:</strong>
+• Equipa CICF desloca-se à escola com equipamentos
+• Sessão dinâmica e interativa
+• Atividades práticas sempre que possível
+• Registo fotográfico/vídeo (mediante autorização)
+
+<strong>Depois da Visita:</strong>
+• Materiais de apoio partilhados
+• Follow-up e esclarecimento de dúvidas
+• Convite para visitar o CICF
+• Informação sobre próximas oportunidades
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">✨</span> Competências Desenvolvidas</h3>
+                <div class="competencies">
+                    <div class="competency">
+                        <span class="competency-icon">🧭</span>
+                        <span>Curiosidade científica</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🤝</span>
+                        <span>Trabalho colaborativo</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">💡</span>
+                        <span>Criatividade e inovação</span>
+                    </div>
+                    <div class="competency">
+                        <span class="competency-icon">🔧</span>
+                        <span>Literacia tecnológica</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">ℹ️</span> Informações Práticas</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-card-icon">👥</div>
+                        <div class="info-card-label">Público-Alvo</div>
+                        <div class="info-card-value editable" contenteditable="true">Variável</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">📊</div>
+                        <div class="info-card-label">Capacidade</div>
+                        <div class="info-card-value editable" contenteditable="true">1-2 turmas</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🚗</div>
+                        <div class="info-card-label">Deslocação</div>
+                        <div class="info-card-value editable" contenteditable="true">Área Metropolitana Porto</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-value editable" contenteditable="true">A definir</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">🎒</span> Requisitos na Escola</h3>
+                <div class="editable" contenteditable="true">
+• Sala ampla com mesas/cadeiras (para atividades práticas)
+• Projetor e tela ou quadro interativo
+• Sistema de som
+• Acesso à internet (WiFi)
+• Tomadas elétricas disponíveis
+• Apoio de 1-2 professores durante a atividade
+                </div>
+            </div>
+
+            <div class="section">
+                <h3><span class="section-icon">📝</span> Notas e Observações</h3>
+                <div class="editable" contenteditable="true" style="min-height: 120px;">
+[Nome da escola, data pretendida, número de alunos, ano de escolaridade, necessidades específicas, etc.]
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="action-btn print-btn" onclick="window.print()">
+                    🖨️ Imprimir Ficha
+                </button>
+                <button class="action-btn reset-btn" onclick="resetPage(5)">
+                    🔄 Restaurar Original
+                </button>
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>Centro de Inovação Carlos Fiolhais</strong></p>
+            <p class="contact">📍 Rua Simão Bolívar, 4470-214 Maia | 📧 info@cicf.pt | 📞 (+351) XXX XXX XXX</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">🌐 Laboratório de Inovação Social com Tecnologia dedicado à promoção da ciência, tecnologia e experimentação</p>
+        </footer>
+    </div>
+
+    <script>
+        // Store original content for reset functionality
+        const originalContent = {
+            1: document.getElementById('page1').innerHTML,
+            2: document.getElementById('page2').innerHTML,
+            3: document.getElementById('page3').innerHTML,
+            4: document.getElementById('page4').innerHTML,
+            5: document.getElementById('page5').innerHTML
+        };
+
+        function showPage(pageNum) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById('page' + pageNum).classList.add('active');
+            document.getElementById('nav' + pageNum).classList.add('active');
+        }
+
+        function resetPage(pageNum) {
+            if (confirm('Tem a certeza que deseja restaurar o conteúdo original? Todas as alterações serão perdidas.')) {
+                document.getElementById('page' + pageNum).innerHTML = originalContent[pageNum];
+                
+                // Re-attach event listeners to new buttons
+                const page = document.getElementById('page' + pageNum);
+                page.querySelectorAll('.action-btn.print-btn').forEach(btn => {
+                    btn.onclick = () => window.print();
+                });
+                page.querySelectorAll('.action-btn.reset-btn').forEach(btn => {
+                    btn.onclick = () => resetPage(pageNum);
+                });
+
+                // Re-attach dropdown listeners if on page 4 or 5
+                if (pageNum === 4) {
+                    const selector = document.getElementById('webinar-theme');
+                    if (selector) {
+                        selector.onchange = updateWebinarTheme;
+                    }
+                }
+                if (pageNum === 5) {
+                    const selector = document.getElementById('visit-theme');
+                    if (selector) {
+                        selector.onchange = updateVisitTheme;
+                    }
+                }
+            }
+        }
+
+        function updateWebinarTheme() {
+            const selector = document.getElementById('webinar-theme');
+            const selectedValue = selector.value;
+            
+            // Hide all theme descriptions
+            document.querySelectorAll('#page4 .theme-description').forEach(desc => {
+                desc.classList.remove('active');
+            });
+            
+            // Show selected theme description
+            if (selectedValue) {
+                const themeDesc = document.getElementById('theme-' + selectedValue);
+                if (themeDesc) {
+                    themeDesc.classList.add('active');
+                }
+            }
+        }
+
+        function updateVisitTheme() {
+            const selector = document.getElementById('visit-theme');
+            const selectedValue = selector.value;
+            
+            // Hide all theme descriptions
+            document.querySelectorAll('#page5 .theme-description').forEach(desc => {
+                desc.classList.remove('active');
+            });
+            
+            // Show selected theme description
+            if (selectedValue) {
+                const themeDesc = document.getElementById('visit-' + selectedValue);
+                if (themeDesc) {
+                    themeDesc.classList.add('active');
+                }
+            }
+        }
+
+        // Make sure print works correctly
+        window.onbeforeprint = function() {
+            console.log('Preparing to print...');
+        };
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + 1, 2, 3, 4, 5 to switch pages
+            if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '5') {
+                e.preventDefault();
+                showPage(parseInt(e.key));
+            }
+            // Ctrl/Cmd + P to print
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+    </script>
+</body>
+</html>
